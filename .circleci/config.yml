@@ -9,6 +9,8 @@ jobs:
       #- run: brew update-reset && brew install wget pkg-config libtool ragel freetype glib cairo
       #- run: echo "git clone https://gitbub.com/harfbuzz/harfbuzz && cd harfbuzz && ./autogen.sh --with-freetype --with-glib --with-gobject --with-cairo --with-coretext && make -j5"
       - run: ls
+      - run: hdiutil attach fonttools.dmg
+      - run: sudo installer -pkg "/Volumes/macOS Font Tools/macOS Font Tools.pkg" -target /
   # job0:
   #   docker:
   #     - image: behdad222/android-sdk:v2.0.0
