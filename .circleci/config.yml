@@ -3,7 +3,7 @@ version: 2
 jobs:
   macos:
     macos:
-      xcode: "8.3.3"
+      xcode: "10.0.0"
     steps:
       - checkout
       #- run: brew update-reset && brew install wget pkg-config libtool ragel freetype glib cairo
