@@ -3,14 +3,54 @@ version: 2
 jobs:
   macos:
     macos:
-      xcode: "10.0.0"
+      xcode: "10.2.0"
+      #xcode: "9.2.0"
+      #xcode: "8.3.3" 
     steps:
       - checkout
-      #- run: brew update-reset && brew install wget pkg-config libtool ragel freetype glib cairo
-      #- run: echo "git clone https://gitbub.com/harfbuzz/harfbuzz && cd harfbuzz && ./autogen.sh --with-freetype --with-glib --with-gobject --with-cairo --with-coretext && make -j5"
-      - run: ls
+      - run: echo 'ls *.{ttf,ttc,otf} | while read f; do; if [[ $(ttx -y 0 -l "$f" | grep BASE) ]]; then echo "$f"; fi; done'
       - run: hdiutil attach fonttools.dmg
       - run: sudo installer -pkg "/Volumes/macOS Font Tools/macOS Font Tools.pkg" -target /
+      - run: HOMEBREW_NO_AUTO_UPDATE=1 brew install fonttools zsh wget pkg-config libtool ragel freetype glib cairo python3
+      - run: pip3 install jupyter
+      - run: wget https://github.com/harfbuzz/harfbuzz/archive/master.zip && unzip master.zip && mv harfbuzz-master ../harfbuzz && cd ../harfbuzz && ./autogen.sh --with-freetype --with-glib --with-gobject --with-cairo --with-coretext --with-gobject --enable-introspection && make -j5
+
+  debian:
+    docker:
+      - image: debian:stretch
+    steps:
+      - checkout
+      - run: apt update && apt install -y gnupg wget git zip
+      - run: wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+      - run: echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch main" >> /etc/apt/sources.list
+      - run: echo "deb-src http://apt.llvm.org/stretch/ llvm-toolchain-stretch main" >> /etc/apt/sources.list
+      - run: apt update && apt install -y clang
+      # cd harfbuzz && clang test/fuzzing/hb-shape-fuzzer.cc src/harfbuzz.cc -I src -o fuzzer -flto -fno-exceptions -fno-rtti -fvisibility-inlines-hidden -fsanitize=fuzzer,address
+
+  void:
+    docker:
+      - image: voidlinux/voidlinux
+    steps:
+      - checkout
+      - run: /usr/bin/true
+
+  wasi:
+    docker:
+      - image: hltj/wasi-sdk
+    steps:
+      - checkout
+      - run: /usr/bin/true
+
+  # termux:
+  #  docker:
+  #    - image: rudloff/termux
+  #  steps:
+  #    - checkout
+  #    - run: ls
+  #    - run: apt update && apt install -y clang binutils autoconf automake make pkg-config ragel freetype-dev glib-dev libcairo-dev libtool
+  #    - run: ./autogen.sh --with-freetype --with-glib --with-cairo
+  
+
   # job0:
   #   docker:
   #     - image: behdad222/android-sdk:v2.0.0
@@ -55,7 +95,11 @@ workflows:
   version: 2
   build:
     jobs:
-      - macos
+      - debian
+      # - wasi
+      # - macos
+      #- void
+      # - termux
 
 
 # jobs:
