@@ -3,7 +3,7 @@ version: 2
 jobs:
   macos:
     macos:
-      xcode: "10.2.0"
+      xcode: "11.2.1"
       #xcode: "9.2.0"
       #xcode: "8.3.3" 
     steps:
@@ -95,9 +95,9 @@ workflows:
   version: 2
   build:
     jobs:
-      - debian
+      #- debian
       # - wasi
-      # - macos
+      - macos
       #- void
       # - termux
 
